@@ -1,30 +1,38 @@
 #!/usr/bin/python3
 import sys
+from sympy import factorint
 
-
-def factorization():
-
+def factorize_large_number(n):
     """
-    # n = p × q. The problem is to find these two primes, given only n.
+    Factorize a large number into prime factors.
     """
-    try:
-        files = sys.argv[1]
-        with open(files) as f:
-            for numbs in f:
-                numbs = int(numbs)
-                if numbs % 2 == 0:
-                    print("{}={}*{}".format(numbs, numbs // 2, 2))
-                    continue
-                run = 3
-                while run < numbs // 2:
-                    if numbs % run == 0:
-                        print("{}={}*{}".format(numbs, numbs // run, run))
-                        break
-                    run = run + 2
-                if run == (numbs // 2) + 1:
-                    print("{}={}*{}".format(numbs, numbs, 1))
-    except (IndexError):
-        pass
+    factors = factorint(n)
 
+    prime_factors = list(factors.keys())
+    if len(prime_factors) == 2:
+        p, q = prime_factors
+        print(f"{n}={p}*{q}")
+    else:
+        print(f"{n} is not the product of exactly two prime numbers.")
 
-factorization()
+if len(sys.argv) != 2:
+    print("Usage: ./rsa <file>")
+    sys.exit(1)
+
+try:
+    with open(sys.argv[1]) as file:
+        line = file.readline()
+
+        while line:
+            n = int(line.strip())
+            factorize_large_number(n)
+            line = file.readline()
+
+except FileNotFoundError:
+    print(f'File not found: {sys.argv[1]}')
+except ValueError:
+    print(f'Invalid input in the file: {sys.argv[1]}')
+except Exception as e:
+    print(f'An error occurred: {str(e)}')
+    pass
+
